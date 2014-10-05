@@ -19,7 +19,10 @@ public class TroveUtils {
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
                     if (!line.isEmpty() && line.endsWith(".zip")) {
-                        TroveMods.addMod(new File(line));
+                        File file = new File(line);
+                        if (file.exists()) {
+                            TroveMods.addMod(file);
+                        }
                     }
                 }
                 bufferedReader.close();
@@ -69,6 +72,7 @@ public class TroveUtils {
             }
         }
         TroveModLoaderGUI.enabledButtons();
+        TroveUtils.saveModsToTextFile(new File("loadmods.txt"));
         JOptionPane.showMessageDialog(TroveModLoader.getTroveModLoaderGUI(), "Mods installed!", "Trove Mod Loader", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -108,7 +112,6 @@ public class TroveUtils {
 
     public static void unzipFileIntoDirectory(ZipFile zipFile, File directory) {
         Enumeration files = zipFile.entries();
-        FileOutputStream fileOutputStream = null;
         while (files.hasMoreElements()) {
             try {
                 ZipEntry entry = (ZipEntry) files.nextElement();
@@ -125,22 +128,20 @@ public class TroveUtils {
                     file.createNewFile();
                 }
 
-                fileOutputStream = new FileOutputStream(file);
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
                     fileOutputStream.write(buffer, 0, bytesRead);
                 }
+                fileOutputStream.close();
             } catch (FileNotFoundException ignored) {
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                if (fileOutputStream != null) {
-                    try {
-                        fileOutputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
+        }
+        try {
+            zipFile.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 

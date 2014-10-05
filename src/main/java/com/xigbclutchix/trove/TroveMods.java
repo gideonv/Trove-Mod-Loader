@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class TroveMods {
 
     private static ArrayList<File> mods = new ArrayList<File>();
-    private static DefaultListModel listModel = new DefaultListModel();
+    private static DefaultListModel<String> listModel = new DefaultListModel<String>();
 
     public static void addMod(File mod) {
         if (!mods.contains(mod)) {
@@ -29,7 +29,7 @@ public class TroveMods {
         return mods;
     }
 
-    public static DefaultListModel getListModel() {
+    public static DefaultListModel<String> getListModel() {
         return listModel;
     }
 }
