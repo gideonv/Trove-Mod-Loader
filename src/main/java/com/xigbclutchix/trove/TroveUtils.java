@@ -57,9 +57,15 @@ public class TroveUtils {
     public static void addModsToInstallation() {
         String installLocation = null;
         try {
-            installLocation = getInstallLocation();
-        } catch (Exception e) {
-            e.printStackTrace();
+            installLocation = getInstallLocation32();
+            if (installLocation == null) {
+                installLocation = getInstallLocation64();
+                if (installLocation == null) {
+                    JOptionPane.showMessageDialog(TroveModLoader.getTroveModLoaderGUI(), "No installation location found!", "Trove Mod Loader", JOptionPane.ERROR);
+                    return;
+                }
+            }
+        } catch (Exception ignored) {
         }
         if (installLocation != null && !installLocation.isEmpty()) {
             File installDirectory = new File(installLocation);
@@ -145,7 +151,11 @@ public class TroveUtils {
         }
     }
 
-    public static String getInstallLocation() throws InvocationTargetException, IllegalAccessException {
+    public static String getInstallLocation64() throws InvocationTargetException, IllegalAccessException {
         return WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Glyph Trove", "InstallLocation");
+    }
+
+    public static String getInstallLocation32() throws InvocationTargetException, IllegalAccessException {
+        return WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Glyph Trove", "InstallLocation");
     }
 }

@@ -121,7 +121,7 @@ public class TroveModLoaderGUI extends JFrame {
 
         //======== this ========
         setResizable(false);
-        setTitle("Trove Mod Loader v1.1.0");
+        setTitle("Trove Mod Loader v1.1.1");
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
