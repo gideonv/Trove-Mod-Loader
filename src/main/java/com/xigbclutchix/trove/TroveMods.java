@@ -16,6 +16,7 @@ public class TroveMods {
                 mods.add(mod);
                 modName = modName.substring(0, modName.length() - 4);
                 listModel.addElement(modName);
+                TroveUtils.saveMods();
             }
         }
     }
@@ -23,6 +24,7 @@ public class TroveMods {
     public static void removeMod(int mod) {
         mods.remove(mod);
         listModel.removeElementAt(mod);
+        TroveUtils.saveMods();
     }
 
     public static ArrayList<File> getMods() {

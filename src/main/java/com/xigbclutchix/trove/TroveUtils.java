@@ -1,13 +1,22 @@
 package com.xigbclutchix.trove;
 
-import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class TroveUtils {
+
+    private static String troveInstallLocation;
+
+    public static void saveMods() {
+        File troveModLoaderDirectory = new File(System.getenv("APPDATA") + File.separator + "Trove-Mod-Loader-Java");
+        File loadModsFile = new File(troveModLoaderDirectory + File.separator + "loadmods.txt");
+        TroveUtils.saveModsToTextFile(loadModsFile);
+    }
 
     public static void addModsFromTextFile(File modList) {
         String modListName = modList.getName();
@@ -55,20 +64,9 @@ public class TroveUtils {
     }
 
     public static void addModsToInstallation() {
-        String installLocation = null;
-        try {
-            installLocation = getInstallLocation32();
-            if (installLocation == null) {
-                installLocation = getInstallLocation64();
-                if (installLocation == null) {
-                    JOptionPane.showMessageDialog(TroveModLoader.getTroveModLoaderGUI(), "No installation location found!", "Trove Mod Loader", JOptionPane.ERROR);
-                    return;
-                }
-            }
-        } catch (Exception ignored) {
-        }
-        if (installLocation != null && !installLocation.isEmpty()) {
-            File installDirectory = new File(installLocation);
+        TroveModLoader.getTroveModLoaderGUI().disableButtons();
+        if (getTroveInstallLocation() != null && !getTroveInstallLocation().isEmpty()) {
+            File installDirectory = new File(getTroveInstallLocation());
             for (File mod : TroveMods.getMods()) {
                 try {
                     unzipFileIntoDirectory(new ZipFile(mod), installDirectory);
@@ -77,9 +75,16 @@ public class TroveUtils {
                 }
             }
         }
-        TroveModLoaderGUI.enabledButtons();
-        TroveUtils.saveModsToTextFile(new File("loadmods.txt"));
-        JOptionPane.showMessageDialog(TroveModLoader.getTroveModLoaderGUI(), "Mods installed!", "Trove Mod Loader", JOptionPane.INFORMATION_MESSAGE);
+        TroveModLoader.getTroveModLoaderGUI().enabledButtons();
+
+        if (TroveMods.getMods().size() > 0) {
+            saveMods();
+
+            Date date = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            String textLabel = simpleDateFormat.format(date) + " - " + TroveMods.getMods().size() + (TroveMods.getMods().size() == 1 ? " mod" : " ") + " installed!";
+            TroveModLoader.getTroveModLoaderGUI().setTroveLabel(textLabel);
+        }
     }
 
     public static boolean isProcessRunning(String process) {
@@ -157,5 +162,65 @@ public class TroveUtils {
 
     public static String getInstallLocation32() throws InvocationTargetException, IllegalAccessException {
         return WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Glyph Trove", "InstallLocation");
+    }
+
+    public static void setTroveInstallLocation(String newTroveInstallLocation) {
+        troveInstallLocation = newTroveInstallLocation;
+    }
+
+    public static String getTroveInstallLocation() {
+        return troveInstallLocation;
+    }
+
+    public static void saveTextToFile(String text, File file) {
+        try {
+            PrintStream out = new PrintStream(new FileOutputStream(file));
+            out.print(text);
+            out.close();
+        } catch (FileNotFoundException ignored) {
+        }
+    }
+
+    public static String readTextFromFile(File file) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            return reader.readLine();
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    public static void createTroveModLoaderFolder() {
+        File directory = new File(System.getenv("APPDATA"));
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+    }
+
+    public static void setTroveFolderLocationAtStart(File troveModLoaderDirectory) {
+        File file = new File(troveModLoaderDirectory + File.separator + "settings.txt");
+        String installLocation = null;
+
+        createTroveModLoaderFolder();
+
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                installLocation = getInstallLocation32();
+                if (installLocation == null) {
+                    installLocation = getInstallLocation64();
+                    if (installLocation != null) {
+                        saveTextToFile(installLocation, file);
+                    }
+                }
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+        } else {
+            installLocation = readTextFromFile(file);
+        }
+        if (installLocation != null) {
+            troveInstallLocation = installLocation;
+        }
     }
 }
