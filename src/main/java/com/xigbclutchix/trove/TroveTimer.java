@@ -1,7 +1,5 @@
 package com.xigbclutchix.trove;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,11 +18,7 @@ public class TroveTimer {
         @Override
         public void run() {
             boolean isTroveRunning = TroveUtils.isProcessRunning("Trove.exe");
-
-            Date date = new Date();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-            String textLabel =  simpleDateFormat.format(date) + " - " + "Trove is " + (isTroveRunning ? "" : "not ") + "running";
-            TroveModLoader.getTroveModLoaderGUI().setTroveLabel(textLabel);
+            TroveModLoader.getTroveModLoaderGUI().setTroveStatusLabel("Trove is " + (isTroveRunning ? "" : "not ") + "running");
 
             if (!troveRan && isTroveRunning) {
                 TroveUtils.addModsToInstallation();

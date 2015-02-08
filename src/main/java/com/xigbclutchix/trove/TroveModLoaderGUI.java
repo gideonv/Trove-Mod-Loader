@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /*
  * Created by JFormDesigner on Tue Sep 30 13:38:13 EDT 2014
@@ -41,6 +43,10 @@ public class TroveModLoaderGUI extends JFrame {
         int response = chooser.showOpenDialog(null);
         if (response == JFileChooser.APPROVE_OPTION) {
             TroveMods.addMod(chooser.getSelectedFile());
+            Date date = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            String textLabel = simpleDateFormat.format(date) + " - 1 mod added!";
+            TroveModLoader.getTroveModLoaderGUI().setModLabel(textLabel);
         }
     }
 
@@ -119,7 +125,11 @@ public class TroveModLoaderGUI extends JFrame {
         button5.setEnabled(false);
     }
 
-    public void setTroveLabel(String text) {
+    public void setTroveStatusLabel(String text) {
+        label2.setText(text);
+    }
+
+    public void setModLabel(String text) {
         label1.setText(text);
     }
 
@@ -134,11 +144,13 @@ public class TroveModLoaderGUI extends JFrame {
         button4 = new JButton();
         button5 = new JButton();
         label1 = new JLabel();
+        label2 = new JLabel();
 
         //======== this ========
         setResizable(false);
-        setTitle("Trove Mod Loader v1.2.0");
-        setMinimumSize(new Dimension(475, 185));
+        setTitle("Trove Mod Loader v1.3.0");
+        setMinimumSize(new Dimension(475, 215));
+        setIconImage(new ImageIcon(getClass().getResource("/com/xigbclutchix/trove/icon.png")).getImage());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -164,10 +176,12 @@ public class TroveModLoaderGUI extends JFrame {
 
             //---- list1 ----
             list1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            list1.setMinimumSize(new Dimension(295, 147));
+            list1.setMaximumSize(new Dimension(295, 147));
             scrollPane1.setViewportView(list1);
         }
         contentPane.add(scrollPane1);
-        scrollPane1.setBounds(5, 5, 295, 117);
+        scrollPane1.setBounds(5, 5, 295, 147);
 
         //---- button1 ----
         button1.setText("Add Mod");
@@ -212,8 +226,16 @@ public class TroveModLoaderGUI extends JFrame {
         });
         contentPane.add(button5);
         button5.setBounds(305, 65, 160, button5.getPreferredSize().height);
+
+        //---- label1 ----
+        label1.setHorizontalAlignment(SwingConstants.CENTER);
         contentPane.add(label1);
-        label1.setBounds(5, 130, 295, 20);
+        label1.setBounds(5, 155, 295, 20);
+
+        //---- label2 ----
+        label2.setHorizontalAlignment(SwingConstants.CENTER);
+        contentPane.add(label2);
+        label2.setBounds(306, 155, 159, 20);
 
         { // compute preferred size
             Dimension preferredSize = new Dimension();
@@ -228,7 +250,7 @@ public class TroveModLoaderGUI extends JFrame {
             contentPane.setMinimumSize(preferredSize);
             contentPane.setPreferredSize(preferredSize);
         }
-        setSize(485, 185);
+        setSize(485, 215);
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -243,5 +265,6 @@ public class TroveModLoaderGUI extends JFrame {
     private JButton button4;
     private JButton button5;
     private JLabel label1;
+    private JLabel label2;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

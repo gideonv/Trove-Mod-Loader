@@ -6,9 +6,10 @@ new FormModel {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 			name: "this"
 			"resizable": false
-			"title": "Trove Mod Loader v1.2.0"
-			"minimumSize": new java.awt.Dimension( 475, 185 )
+			"title": "Trove Mod Loader v1.3.0"
+			"minimumSize": new java.awt.Dimension( 475, 215 )
 			"$sizePolicy": 1
+			"iconImage": new com.jformdesigner.model.SwingIcon( 0, "/com/xigbclutchix/trove/icon.png" )
 			addEvent( new FormEvent( "java.awt.event.WindowListener", "windowClosing", "thisWindowClosing", true ) )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button3"
@@ -24,12 +25,14 @@ new FormModel {
 				add( new FormComponent( "javax.swing.JList" ) {
 					name: "list1"
 					"selectionMode": 0
+					"minimumSize": new java.awt.Dimension( 295, 147 )
+					"maximumSize": new java.awt.Dimension( 295, 147 )
 				} )
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 				"x": 5
 				"y": 5
 				"width": 295
-				"height": 117
+				"height": 147
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button1"
@@ -69,15 +72,25 @@ new FormModel {
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "label1"
+				"horizontalAlignment": 0
 			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
 				"x": 5
-				"y": 130
+				"y": 155
 				"width": 295
 				"height": 20
 			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label2"
+				"horizontalAlignment": 0
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+				"width": 159
+				"height": 20
+				"x": 306
+				"y": 155
+			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 485, 185 )
+			"size": new java.awt.Dimension( 485, 215 )
 		} )
 	}
 }

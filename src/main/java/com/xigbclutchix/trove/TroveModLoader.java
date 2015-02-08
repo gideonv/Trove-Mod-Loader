@@ -7,15 +7,17 @@ public class TroveModLoader {
     private static TroveModLoaderGUI troveModLoaderGUI;
 
     public static void main(String[] args) {
-        troveModLoaderGUI = new TroveModLoaderGUI();
-        troveModLoaderGUI.setVisible(true);
-        troveModLoaderGUI.setSize(450, 190);
-
         File troveModLoaderDirectory = new File(System.getenv("APPDATA") + File.separator + "Trove-Mod-Loader-Java");
         File loadModsFile = new File(troveModLoaderDirectory + File.separator + "loadmods.txt");
 
         TroveUtils.setTroveFolderLocationAtStart(troveModLoaderDirectory);
         TroveUtils.addModsFromTextFile(loadModsFile);
+
+        troveModLoaderGUI = new TroveModLoaderGUI();
+        troveModLoaderGUI.setVisible(true);
+        troveModLoaderGUI.setSize(450, 190);
+
+        TroveUtils.setTroveModText();
     }
 
     public static TroveModLoaderGUI getTroveModLoaderGUI() {

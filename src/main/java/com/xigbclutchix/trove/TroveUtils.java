@@ -18,6 +18,19 @@ public class TroveUtils {
         TroveUtils.saveModsToTextFile(loadModsFile);
     }
 
+    public static void setTroveModText() {
+        if (TroveMods.getMods().size() <= 0) {
+            return;
+        }
+        if (TroveModLoader.getTroveModLoaderGUI() == null) {
+            return;
+        }
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+        String textLabel = simpleDateFormat.format(date) + " - " + TroveMods.getMods().size() + (TroveMods.getMods().size() == 1 ? " mod" : " mods") + " added!";
+        TroveModLoader.getTroveModLoaderGUI().setModLabel(textLabel);
+    }
+
     public static void addModsFromTextFile(File modList) {
         String modListName = modList.getName();
         if (modListName.endsWith(".txt")) {
@@ -40,6 +53,7 @@ public class TroveUtils {
                 e.printStackTrace();
             }
         }
+        setTroveModText();
     }
 
     public static void saveModsToTextFile(File file) {
@@ -76,15 +90,11 @@ public class TroveUtils {
             }
         }
         TroveModLoader.getTroveModLoaderGUI().enabledButtons();
-
-        if (TroveMods.getMods().size() > 0) {
-            saveMods();
-
-            Date date = new Date();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-            String textLabel = simpleDateFormat.format(date) + " - " + TroveMods.getMods().size() + (TroveMods.getMods().size() == 1 ? " mod" : " ") + " installed!";
-            TroveModLoader.getTroveModLoaderGUI().setTroveLabel(textLabel);
+        if (TroveMods.getMods().size() <= 0) {
+            return;
         }
+        saveMods();
+        setTroveModText();
     }
 
     public static boolean isProcessRunning(String process) {
