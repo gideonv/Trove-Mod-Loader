@@ -17,6 +17,10 @@ public class TroveTimer {
     public static class TroveTimerTask extends TimerTask {
         @Override
         public void run() {
+            if (TroveUtils.getTroveInstallLocation() == null) {
+                TroveModLoader.getTroveModLoaderGUI().disableButtons(false);
+            }
+
             boolean isTroveRunning = TroveUtils.isProcessRunning("Trove.exe");
             TroveModLoader.getTroveModLoaderGUI().setTroveStatusLabel("Trove is " + (isTroveRunning ? "" : "not ") + "running");
 

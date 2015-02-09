@@ -31,7 +31,7 @@ public class WinRegistry {
 
             regQueryValueEx = userClass.getDeclaredMethod("WindowsRegQueryValueEx", int.class, byte[].class);
             regQueryValueEx.setAccessible(true);
-        } catch (Exception ex) {
+        } catch (NoSuchMethodException ex) {
             ex.printStackTrace();
         }
     }

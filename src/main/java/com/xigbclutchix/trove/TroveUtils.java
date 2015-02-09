@@ -25,13 +25,10 @@ public class TroveUtils {
         if (TroveModLoader.getTroveModLoaderGUI() == null) {
             return;
         }
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-        String textLabel = simpleDateFormat.format(date) + " - " + TroveMods.getMods().size() + (TroveMods.getMods().size() == 1 ? " mod" : " mods") + " added!";
-        TroveModLoader.getTroveModLoaderGUI().setModLabel(textLabel);
+        setModLabel(TroveMods.getMods().size() + (TroveMods.getMods().size() == 1 ? " mod" : " mods") + " added!");
     }
 
-    public static void addModsFromTextFile(File modList) {
+    public static void addModsFromTextFile(File modList, boolean firstTime) {
         String modListName = modList.getName();
         if (modListName.endsWith(".txt")) {
             TroveMods.getMods().clear();
@@ -48,10 +45,14 @@ public class TroveUtils {
                     }
                 }
                 bufferedReader.close();
-            } catch (FileNotFoundException ignored) {
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
+        }
+        if (firstTime) {
+            return;
         }
         setTroveModText();
     }
@@ -73,19 +74,20 @@ public class TroveUtils {
             PrintStream out = new PrintStream(new FileOutputStream(saveFile));
             out.print(stringBuilder);
             out.close();
-        } catch (FileNotFoundException ignored) {
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
         }
     }
 
     public static void addModsToInstallation() {
-        TroveModLoader.getTroveModLoaderGUI().disableButtons();
+        TroveModLoader.getTroveModLoaderGUI().disableButtons(true);
         if (getTroveInstallLocation() != null && !getTroveInstallLocation().isEmpty()) {
             File installDirectory = new File(getTroveInstallLocation());
             for (File mod : TroveMods.getMods()) {
                 try {
                     unzipFileIntoDirectory(new ZipFile(mod), installDirectory);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         }
@@ -124,9 +126,10 @@ public class TroveUtils {
                 }
             }
             input.close();
-        } catch (FileNotFoundException ignored) {
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
         return found;
     }
@@ -154,9 +157,10 @@ public class TroveUtils {
                     fileOutputStream.write(buffer, 0, bytesRead);
                 }
                 fileOutputStream.close();
-            } catch (FileNotFoundException ignored) {
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         }
         try {
@@ -187,7 +191,8 @@ public class TroveUtils {
             PrintStream out = new PrintStream(new FileOutputStream(file));
             out.print(text);
             out.close();
-        } catch (FileNotFoundException ignored) {
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -195,7 +200,10 @@ public class TroveUtils {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             return reader.readLine();
-        } catch (Exception ignored) {
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
         return null;
     }
@@ -209,28 +217,61 @@ public class TroveUtils {
 
     public static void setTroveFolderLocationAtStart(File troveModLoaderDirectory) {
         File file = new File(troveModLoaderDirectory + File.separator + "settings.txt");
-        String installLocation = null;
 
         createTroveModLoaderFolder();
 
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                installLocation = getInstallLocation32();
-                if (installLocation == null) {
-                    installLocation = getInstallLocation64();
-                    if (installLocation != null) {
-                        saveTextToFile(installLocation, file);
-                    }
-                }
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
+                lookForInstallLocation(troveModLoaderDirectory);
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         } else {
-            installLocation = readTextFromFile(file);
+            String loadedText = readTextFromFile(file);
+            if (loadedText == null) {
+                lookForInstallLocation(troveModLoaderDirectory);
+            } else {
+                setTroveInstallLocation(loadedText);
+                setModLabel("Install location loaded");
+                TroveModLoader.getTroveModLoaderGUI().enabledButtons();
+            }
         }
-        if (installLocation != null) {
-            troveInstallLocation = installLocation;
+    }
+
+    public static void lookForInstallLocation(File troveModLoaderDirectory) {
+        File file = new File(troveModLoaderDirectory + File.separator + "settings.txt");
+        String installLocation;
+        try {
+            installLocation = getInstallLocation32();
+            if (installLocation == null) {
+                installLocation = getInstallLocation64();
+                if (installLocation != null) {
+                    saveTextToFile(installLocation, file);
+                    setTroveInstallLocation(installLocation);
+                    setModLabel("Install location set to 64 bit");
+                    TroveModLoader.getTroveModLoaderGUI().enabledButtons();
+                }
+            } else {
+                saveTextToFile(installLocation, file);
+                setTroveInstallLocation(installLocation);
+                setModLabel("Install location set to 32 bit");
+                TroveModLoader.getTroveModLoaderGUI().enabledButtons();
+            }
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        } catch (InvocationTargetException ex) {
+            ex.printStackTrace();
         }
+    }
+
+    public static void setModLabel(String text) {
+        if (TroveModLoader.getTroveModLoaderGUI() == null) {
+            return;
+        }
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+        String textLabel = simpleDateFormat.format(date) + " - " + text;
+        TroveModLoader.getTroveModLoaderGUI().setModLabel(textLabel);
     }
 }

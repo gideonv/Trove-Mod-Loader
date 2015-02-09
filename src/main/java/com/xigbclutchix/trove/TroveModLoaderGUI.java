@@ -46,7 +46,7 @@ public class TroveModLoaderGUI extends JFrame {
             Date date = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
             String textLabel = simpleDateFormat.format(date) + " - 1 mod added!";
-            TroveModLoader.getTroveModLoaderGUI().setModLabel(textLabel);
+            setModLabel(textLabel);
         }
     }
 
@@ -54,6 +54,10 @@ public class TroveModLoaderGUI extends JFrame {
     private void button2MousePressed(MouseEvent event) {
         if (list1.getSelectedIndex() >= 0) {
             TroveMods.removeMod(list1.getSelectedIndex());
+            Date date = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            String textLabel = simpleDateFormat.format(date) + " - 1 mod removed!";
+            setModLabel(textLabel);
         }
     }
 
@@ -68,7 +72,7 @@ public class TroveModLoaderGUI extends JFrame {
 
         int response = chooser.showOpenDialog(null);
         if (response == JFileChooser.APPROVE_OPTION) {
-            TroveUtils.addModsFromTextFile(chooser.getSelectedFile());
+            TroveUtils.addModsFromTextFile(chooser.getSelectedFile(), false);
         }
     }
 
@@ -106,6 +110,8 @@ public class TroveModLoaderGUI extends JFrame {
             File troveModLoaderDirectory = new File(System.getenv("APPDATA") + File.separator + "Trove-Mod-Loader-Java");
             File file = new File(troveModLoaderDirectory + File.separator + "settings.txt");
             TroveUtils.saveTextToFile(TroveUtils.getTroveInstallLocation(), file);
+
+            TroveModLoader.getTroveModLoaderGUI().enabledButtons();
         }
     }
 
@@ -117,10 +123,12 @@ public class TroveModLoaderGUI extends JFrame {
         button5.setEnabled(true);
     }
 
-    public void disableButtons() {
+    public void disableButtons(boolean disableChangeFolder) {
         button1.setEnabled(false);
         button2.setEnabled(false);
-        button3.setEnabled(false);
+        if (disableChangeFolder) {
+            button3.setEnabled(false);
+        }
         button4.setEnabled(false);
         button5.setEnabled(false);
     }
@@ -148,7 +156,7 @@ public class TroveModLoaderGUI extends JFrame {
 
         //======== this ========
         setResizable(false);
-        setTitle("Trove Mod Loader v1.3.0");
+        setTitle("Trove Mod Loader v1.3.1");
         setMinimumSize(new Dimension(475, 215));
         setIconImage(new ImageIcon(getClass().getResource("/com/xigbclutchix/trove/icon.png")).getImage());
         addWindowListener(new WindowAdapter() {
